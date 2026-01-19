@@ -1,9 +1,12 @@
 # 🐀 Ratta
-
 A beautiful terminal-based todo list application built with Rust and Ratatui.
+
+![Ratta Preview](public/preview.png)
 
 ![Rust Version](https://img.shields.io/badge/rust-2024-orange.svg)
 ![License](https://img.shields.io/badge/license-MIT-blue.svg)
+
+
 
 ## ✨ Features
 
@@ -177,17 +180,34 @@ The codebase includes extensive inline comments explaining:
 - No search functionality
 - Terminal must support UTF-8 and modern terminal features
 
+## 🔮 Future Plans
+
+We have exciting plans to enhance Ratta with:
+
+### Dashboard & Analytics
+- **Progress Graphs**: Visual charts showing completed vs remaining tasks
+- **Statistics Pane**: Display completion rate, total tasks, and daily/weekly progress
+- **Charts Integration**: ASCII-based bar and line charts for terminal compatibility
+
+### Enhanced Features
+- **Better Preview**: Detailed task preview with metadata (creation date, completion date, estimated time)
+- **Task Filtering**: Filter by status, completion date, or search keywords
+- **Statistics Dashboard**: Overview of productivity metrics and trends
+- **Color Themes**: Customizable color schemes for personalization
+- **Performance Metrics**: Track how many tasks you complete per day/week
+
+### Improvements
+- Add todo editing capabilities
+- Implement categories/tags for organization
+- Add priority levels and sorting
+- Support for todo reordering (drag & drop)
+- Export/import functionality (CSV, JSON formats)
+- Recurring tasks support
+- Dark and light theme options
+
 ## 🤝 Contributing
 
-Contributions are welcome! Areas for improvement:
-
-- Add todo editing capabilities
-- Implement categories/tags
-- Add priority levels
-- Support for todo reordering (drag & drop)
-- Export/import functionality
-- Search and filter features
-- Color themes/customization
+Contributions are welcome! We're actively looking for developers interested in the areas listed above.
 
 ## 📝 License
 
