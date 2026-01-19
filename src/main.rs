@@ -1,11 +1,10 @@
-use color_eyre::{ eyre::{ Ok, Result } };
+use color_eyre::{ eyre::{ Ok, Result }, owo_colors::OwoColorize };
 use ratatui::{
     DefaultTerminal,
     Frame,
     crossterm::event::{ self, Event, KeyEvent },
     layout::{ Constraint, Layout },
     style::{ Color, Style, Stylize },
-    symbols::block,
     text::ToSpan,
     widgets::{ Block, BorderType, List, ListItem, ListState, Padding, Paragraph, Widget },
 };
@@ -106,6 +105,19 @@ fn handle_key(key: KeyEvent, app_state: &mut AppState) -> bool {
             // break will not work here so
             return true;
         }
+        event::KeyCode::Enter => {
+            if let Some(selected) = app_state.list_state.selected() {
+                if let Some(item) = app_state.items.get_mut(selected) {
+                    item.completed = !item.completed;
+                }
+            }
+        }
+        event::KeyCode::Down => {
+            app_state.list_state.select_next();
+        }
+        event::KeyCode::Up => {
+            app_state.list_state.select_previous();
+        }
         event::KeyCode::Char(char) => {
             match char {
                 'q' => {
@@ -131,7 +143,14 @@ fn handle_key(key: KeyEvent, app_state: &mut AppState) -> bool {
 
 fn render(frame: &mut Frame, app_state: &mut AppState) {
     if app_state.can_add_new {
-        let [border_area] = Layout::vertical([Constraint::Fill(1)])
+        render_input_form(frame, app_state);
+    } else {
+        render_list_state(frame, app_state);    
+    }
+}
+
+fn render_input_form(frame: &mut Frame, app_state: &mut AppState) {
+            let [border_area] = Layout::vertical([Constraint::Fill(1)])
             .margin(1)
             .areas(frame.area());
 
@@ -151,8 +170,10 @@ fn render(frame: &mut Frame, app_state: &mut AppState) {
                     .padding(Padding::symmetric(2, 1))
             )
             .render(border_area, frame.buffer_mut());
-    } else {
-        let [border_area] = Layout::vertical([Constraint::Fill(1)])
+}
+
+fn render_list_state(frame: &mut Frame, app_state: &mut AppState) {
+    let [border_area] = Layout::vertical([Constraint::Fill(1)])
             .margin(1)
             .areas(frame.area());
 
@@ -171,12 +192,18 @@ fn render(frame: &mut Frame, app_state: &mut AppState) {
             .render(border_area, frame.buffer_mut());
 
         let list = List::new(
-            app_state.items.iter().map(|x| ListItem::from(x.title.as_str()).fg(Color::White))
+            app_state.items.iter().map(|x| {
+                let value = if x.completed {
+                    x.title.to_span().crossed_out()
+                } else {
+                    x.title.to_span()
+                };
+                ListItem::new(value).fg(Color::White)
+            })
         )
             .highlight_symbol("->")
             .highlight_style(Style::default().fg(Color::Magenta))
             .block(Block::new().padding(Padding::symmetric(2, 1)));
 
         frame.render_stateful_widget(list, inner_area, &mut app_state.list_state);
-    }
 }
