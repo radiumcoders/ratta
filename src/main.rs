@@ -23,36 +23,17 @@ struct TodoItem {
     completed: bool,
 }
 
+enum FormActions {
+    None,
+    Submit,
+    Cancel,
+}
+
 fn main() -> Result<()> {
     color_eyre::install()?;
     let mut state = AppState::default();
     state.can_add_new = false;
-    // Populate with sample data
-    state.items.push(TodoItem {
-        title: "Learn Rust".to_string(),
-        completed: false,
-    });
-    state.items.push(TodoItem {
-        title: "Build a TUI app".to_string(),
-        completed: false,
-    });
-    state.items.push(TodoItem {
-        title: "fdfd".to_string(),
-        completed: false,
-    });
-    state.items.push(TodoItem {
-        title: "gege".to_string(),
-        completed: false,
-    });
-    state.items.push(TodoItem {
-        title: "dgdgs".to_string(),
-        completed: false,
-    });
-    state.items.push(TodoItem {
-        title: "sdtst".to_string(),
-        completed: false,
-    });
-    // dummy data end
+    state.list_state.select(Some(0));
 
     let terminal = ratatui::init();
     let result = run(terminal, &mut state);
@@ -71,8 +52,20 @@ fn run(mut terminal: DefaultTerminal, app_state: &mut AppState) -> Result<()> {
                 continue;
             }
             if app_state.can_add_new {
-                if handle_add_new_key(key, app_state) {
-                    app_state.can_add_new = false;
+                match handle_add_new_key(key, app_state) {
+                    FormActions::Cancel => {
+                        app_state.can_add_new = false;
+                        app_state.input_value.clear();
+                    }
+                    FormActions::None => {}
+                    FormActions::Submit => {
+                        app_state.can_add_new = false;
+                        app_state.items.push(TodoItem {
+                            title: app_state.input_value.drain(..).collect(),
+                            completed: false,
+                        });
+                        app_state.input_value.clear();
+                    }
                 }
             } else {
                 if handle_key(key, app_state) {
@@ -84,16 +77,16 @@ fn run(mut terminal: DefaultTerminal, app_state: &mut AppState) -> Result<()> {
     Ok(())
 }
 
-fn handle_add_new_key(key: KeyEvent, app_state: &mut AppState) -> bool {
+fn handle_add_new_key(key: KeyEvent, app_state: &mut AppState) -> FormActions {
     match key.code {
         event::KeyCode::Esc => {
             // break will not work here so
-            return true;
+            return FormActions::Cancel;
         }
         event::KeyCode::Enter => {
             // Here you would normally add the new item to the list
             // For now, we just exit the add new mode
-            return true;
+            return FormActions::Submit;
         }
         event::KeyCode::Char(c) => {
             app_state.input_value.push(c);
@@ -103,7 +96,7 @@ fn handle_add_new_key(key: KeyEvent, app_state: &mut AppState) -> bool {
         }
         _ => {}
     }
-    false
+    FormActions::None
 }
 
 fn handle_key(key: KeyEvent, app_state: &mut AppState) -> bool {
@@ -137,16 +130,23 @@ fn handle_key(key: KeyEvent, app_state: &mut AppState) -> bool {
 
 fn render(frame: &mut Frame, app_state: &mut AppState) {
     if app_state.can_add_new {
-        //borrow!!!
+        let [border_area] = Layout::vertical([Constraint::Fill(1)])
+            .margin(1)
+            .areas(frame.area());
+
         Paragraph::new(app_state.input_value.as_str())
             .style(Style::default())
             .block(
                 Block::bordered()
                     .fg(Color::Green)
                     .border_type(BorderType::Double)
-                    .title("Add New Item")
+                    .title(
+                        String::from(
+                            "[  Enter new todo item (Press Enter to submit, Esc to cancel)  ]"
+                        )
+                    )
             )
-            .render(frame.area(), frame.buffer_mut());
+            .render(border_area, frame.buffer_mut());
     } else {
         let [border_area] = Layout::vertical([Constraint::Fill(1)])
             .margin(1)
@@ -158,11 +158,15 @@ fn render(frame: &mut Frame, app_state: &mut AppState) {
 
         Block::bordered()
             .border_type(BorderType::Double)
-            // .fg(Color::Yellow)
-            .title(String::from("RATTA - a minimal todo list management app written in rust :)"))
+            .fg(Color::Yellow)
+            .title(
+                String::from("[  RATTA - a minimal todo list management app written in rust :)  ]")
+            )
             .render(border_area, frame.buffer_mut());
 
-        let list = List::new(app_state.items.iter().map(|x| ListItem::from(x.title.as_str())))
+        let list = List::new(
+            app_state.items.iter().map(|x| ListItem::from(x.title.as_str()).fg(Color::White))
+        )
             .highlight_symbol("->")
             .highlight_style(Style::default().fg(Color::Magenta))
             .block(Block::new().padding(Padding::symmetric(2, 1)));
