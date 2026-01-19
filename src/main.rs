@@ -6,6 +6,7 @@ use ratatui::{
     layout::{ Constraint, Layout },
     style::{ Color, Style, Stylize },
     symbols::block,
+    text::ToSpan,
     widgets::{ Block, BorderType, List, ListItem, ListState, Padding, Paragraph, Widget },
 };
 
@@ -144,7 +145,10 @@ fn render(frame: &mut Frame, app_state: &mut AppState) {
                         String::from(
                             "[  Enter new todo item (Press Enter to submit, Esc to cancel)  ]"
                         )
+                            .to_span()
+                            .into_centered_line()
                     )
+                    .padding(Padding::symmetric(2, 1))
             )
             .render(border_area, frame.buffer_mut());
     } else {
@@ -161,6 +165,8 @@ fn render(frame: &mut Frame, app_state: &mut AppState) {
             .fg(Color::Yellow)
             .title(
                 String::from("[  RATTA - a minimal todo list management app written in rust :)  ]")
+                    .to_span()
+                    .into_centered_line()
             )
             .render(border_area, frame.buffer_mut());
 
