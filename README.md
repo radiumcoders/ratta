@@ -2,7 +2,13 @@
 
 A beautiful terminal-based todo list application built with Rust and Ratatui.
 
+## 🎨 Preview
+
+The application features a split-pane layout:
 ![Ratta Preview](public/preview.png)
+
+- **Top Pane**: Todo list with selection highlighting (cyan border when focused)
+- **Bottom Pane**: Add new todo input field (green border when focused)
 
 ![Rust Version](https://img.shields.io/badge/rust-2024-orange.svg)
 ![License](https://img.shields.io/badge/license-MIT-blue.svg)
@@ -15,31 +21,6 @@ A beautiful terminal-based todo list application built with Rust and Ratatui.
 - [Dependencies](DEPENDENCIES.md) - Project dependencies
 - [Limitations](LIMITATIONS.md) - Known limitations
 - [Contributing](CONTRIBUTING.md) - How to contribute
-
-## 🎨 Preview
-
-The application features a split-pane layout:
-
-```
-┌────────────────────────────────────────────────┐
-│  RATTA - Todo List (Navigation shortcuts)     │
-│                                                │
-│  -> Buy groceries                             │
-│     Write documentation (strikethrough)        │
-│     Call mom                                   │
-│                                                │
-│                                                │
-└────────────────────────────────────────────────┘
-┌────────────────────────────────────────────────┐
-│  Add New (Press A to focus, Enter to submit)  │
-│                                                │
-│  [Your input appears here]                     │
-│                                                │
-└────────────────────────────────────────────────┘
-```
-
-- **Top Pane**: Todo list with selection highlighting (cyan border when focused)
-- **Bottom Pane**: Add new todo input field (green border when focused)
 
 ## Future Plans
 
