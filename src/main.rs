@@ -1,5 +1,7 @@
 // Error handling library for better error messages
 use color_eyre::{ eyre::{ Ok, Result } };
+use serde::{ Deserialize, Serialize };
+use std::{ fs, path::PathBuf };
 
 // Ratatui - Terminal User Interface library
 use ratatui::{
@@ -31,7 +33,7 @@ struct AppState {
 }
 
 // Represents a single todo item
-#[derive(Debug, Default)]
+#[derive(Debug, Default, Serialize, Deserialize)]
 struct TodoItem {
     title: String, // The todo text
     completed: bool, // Whether it's been marked as done
@@ -52,6 +54,9 @@ fn main() -> Result<()> {
     // Create initial application state
     let mut state = AppState::default();
     state.focused_view = FocusedView::List; // Start with list focused
+
+    // Load saved todos from file if it exists
+    state.items = load_todos().unwrap_or_default();
     state.list_state.select(Some(0)); // Select first item (if list not empty, this will highlight it)
 
     // Initialize the terminal (enters raw mode, alternate screen)
@@ -59,6 +64,9 @@ fn main() -> Result<()> {
 
     // Run the main application loop
     let result = run(terminal, &mut state);
+
+    // Save todos before quitting
+    save_todos(&state.items)?;
 
     // Restore terminal to normal mode (very important!)
     ratatui::restore();
@@ -272,4 +280,34 @@ fn render_list_view(frame: &mut Frame, app_state: &mut AppState, area: ratatui::
     // render_stateful_widget: Renders a widget that maintains selection state
     // The ListState tracks which item is selected
     frame.render_stateful_widget(list, inner_area, &mut app_state.list_state);
+}
+
+// Get the path to the todos file
+// Saves in user's home directory as .ratta_todos.json
+fn get_todos_path() -> Result<PathBuf> {
+    let mut path = dirs
+        ::home_dir()
+        .ok_or_else(|| color_eyre::eyre::eyre!("Could not find home directory"))?;
+    path.push(".ratta_todos.json");
+    Ok(path)
+}
+
+// Save todos to a JSON file
+fn save_todos(items: &[TodoItem]) -> Result<()> {
+    let path = get_todos_path()?;
+    let json = serde_json::to_string_pretty(items)?;
+    fs::write(path, json)?;
+    Ok(())
+}
+
+// Load todos from JSON file
+// Returns Ok(Vec<TodoItem>) if file exists and is valid, Err otherwise
+fn load_todos() -> Result<Vec<TodoItem>> {
+    let path = get_todos_path()?;
+    if !path.exists() {
+        return Ok(Vec::new());
+    }
+    let json = fs::read_to_string(path)?;
+    let items = serde_json::from_str(&json)?;
+    Ok(items)
 }
