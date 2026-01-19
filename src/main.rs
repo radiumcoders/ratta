@@ -1,4 +1,4 @@
-use color_eyre::{ eyre::{ Ok, Result }, owo_colors::OwoColorize };
+use color_eyre::{ eyre::{ Ok, Result } };
 use ratatui::{
     DefaultTerminal,
     Frame,
@@ -145,65 +145,63 @@ fn render(frame: &mut Frame, app_state: &mut AppState) {
     if app_state.can_add_new {
         render_input_form(frame, app_state);
     } else {
-        render_list_state(frame, app_state);    
+        render_list_state(frame, app_state);
     }
 }
 
 fn render_input_form(frame: &mut Frame, app_state: &mut AppState) {
-            let [border_area] = Layout::vertical([Constraint::Fill(1)])
-            .margin(1)
-            .areas(frame.area());
+    let [border_area] = Layout::vertical([Constraint::Fill(1)])
+        .margin(1)
+        .areas(frame.area());
 
-        Paragraph::new(app_state.input_value.as_str())
-            .style(Style::default())
-            .block(
-                Block::bordered()
-                    .fg(Color::Green)
-                    .border_type(BorderType::Double)
-                    .title(
-                        String::from(
-                            "[  Enter new todo item (Press Enter to submit, Esc to cancel)  ]"
-                        )
-                            .to_span()
-                            .into_centered_line()
-                    )
-                    .padding(Padding::symmetric(2, 1))
-            )
-            .render(border_area, frame.buffer_mut());
+    Paragraph::new(app_state.input_value.as_str())
+        .style(Style::default())
+        .block(
+            Block::bordered()
+                .fg(Color::Green)
+                .border_type(BorderType::Double)
+                .title(
+                    String::from("[  Enter new todo item (Press Enter to submit, Esc to cancel)  ]")
+                        .to_span()
+                        .into_centered_line()
+                )
+                .padding(Padding::symmetric(2, 1))
+        )
+        .render(border_area, frame.buffer_mut());
 }
 
 fn render_list_state(frame: &mut Frame, app_state: &mut AppState) {
     let [border_area] = Layout::vertical([Constraint::Fill(1)])
-            .margin(1)
-            .areas(frame.area());
+        .margin(1)
+        .areas(frame.area());
 
-        let [inner_area] = Layout::vertical([Constraint::Fill(1)])
-            .margin(1)
-            .areas(border_area);
+    let [inner_area] = Layout::vertical([Constraint::Fill(1)])
+        .margin(1)
+        .areas(border_area);
 
-        Block::bordered()
-            .border_type(BorderType::Double)
-            .fg(Color::Yellow)
-            .title(
-                String::from("[  RATTA - a minimal todo list management app written in rust :)  ]")
-                    .to_span()
-                    .into_centered_line()
-            )
-            .render(border_area, frame.buffer_mut());
-
-        let list = List::new(
-            app_state.items.iter().map(|x| {
-                let value = if x.completed {
-                    x.title.to_span().crossed_out()
-                } else {
-                    x.title.to_span()
-                };
-                ListItem::new(value).fg(Color::White)
-            })
+    Block::bordered()
+        .border_type(BorderType::Double)
+        .fg(Color::Yellow)
+        .title(
+            String::from("[  RATTA - a minimal todo list management app written in rust :)  ]")
+                .to_span()
+                .into_centered_line()
         )
-            .highlight_symbol("->")
-            .highlight_style(Style::default().fg(Color::Magenta))
-            .block(Block::new().padding(Padding::symmetric(2, 1)));
+        .render(border_area, frame.buffer_mut());
 
-        frame.render_stateful_widget(list, inner_area, &mut app_state.list_state);
+    let list = List::new(
+        app_state.items.iter().map(|x| {
+            let value = if x.completed {
+                x.title.to_span().crossed_out()
+            } else {
+                x.title.to_span()
+            };
+            ListItem::new(value).fg(Color::White)
+        })
+    )
+        .highlight_symbol("->")
+        .highlight_style(Style::default().fg(Color::Magenta))
+        .block(Block::new().padding(Padding::symmetric(2, 1)));
+
+    frame.render_stateful_widget(list, inner_area, &mut app_state.list_state);
 }
