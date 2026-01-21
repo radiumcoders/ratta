@@ -15,12 +15,12 @@ The application features a split-pane layout:
 
 ## 📚 Documentation
 
-- [Features](FEATURES.md) - Core features overview
-- [Installation & Usage](INSTALLATION.md) - Setup and keyboard shortcuts
-- [Architecture](ARCHITECTURE.md) - Technical details and design
-- [Dependencies](DEPENDENCIES.md) - Project dependencies
-- [Limitations](LIMITATIONS.md) - Known limitations
-- [Contributing](CONTRIBUTING.md) - How to contribute
+- [Features](docs/FEATURES.md) - Core features overview
+- [Installation & Usage](docs/INSTALLATION.md) - Setup and keyboard shortcuts
+- [Architecture](docs/ARCHITECTURE.md) - Technical details and design
+- [Dependencies](docs/DEPENDENCIES.md) - Project dependencies
+- [Limitations](docs/LIMITATIONS.md) - Known limitations
+- [Contributing](docs/CONTRIBUTING.md) - How to contribute
 
 ## Future Plans
 
